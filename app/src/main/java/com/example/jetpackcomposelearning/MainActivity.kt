@@ -12,6 +12,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,45 +33,49 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            UserList()
+            MainContent()
         }
     }
 }
 
 data class Users(
-    val name:String
-)
-
-val users = listOf(
-    Users("alhaj"),
-    Users("bilal"),
-    Users("sahil"),
-    Users("arif"),
-    Users("aman"),
-    Users("sakib"),
-    Users("shadab"),
+    val name: String
 )
 
 @Composable
-fun UserList(){
-//    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-//        for(i in 0..10){
-//            UserCard()
-//        }
-//    }
-    LazyColumn{
-        items(users){user->
+fun MainContent() {
+    val users = remember { mutableStateListOf(Users("alhaj")) }
+    Box(modifier = Modifier.fillMaxSize()) {
+        UserList(users = users)
+        Button(
+            onClick = {
+                users.add(Users("alhaj ${users.size}"))
+
+            },
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            Text(text = "add more")
+        }
+    }
+}
+
+@Composable
+fun UserList(users: List<Users>) {
+    LazyColumn {
+        items(users) { user ->
             UserCard(user.name)
         }
     }
 }
 
 @Composable
-fun UserCard(name:String) {
-    Card(elevation = 4.dp, modifier = Modifier
-        .padding(12.dp)
-        .fillMaxWidth()
-        .wrapContentHeight()) {
+fun UserCard(name: String) {
+    Card(
+        elevation = 4.dp, modifier = Modifier
+            .padding(12.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
         Row(
             modifier = Modifier
                 .padding(12.dp)
@@ -102,6 +108,6 @@ fun UserCard(name:String) {
 @Composable
 fun DefaultPreview() {
     Surface(Modifier.fillMaxSize()) {
-        UserList()
+        MainContent()
     }
 }
